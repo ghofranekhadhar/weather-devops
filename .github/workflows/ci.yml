@@ -12,29 +12,23 @@ jobs:
 
     steps:
       - name: Checkout code
-        uses: actions/checkout@v3
+        uses: actions/checkout@v4
 
       - name: Setup Node.js
-        uses: actions/setup-node@v3
+        uses: actions/setup-node@v4
         with:
           node-version: '18'
 
       - name: Install dependencies
-        run: |
-          cd backend
-          npm install
+        run: cd backend && npm install
 
       - name: Lint
-        run: |
-          cd backend
-          npm run lint
+        run: cd backend && npm run lint
 
       - name: Tests
-        run: |
-          cd backend
-          npm test
+        run: cd backend && npm test
 
-    - name: SonarCloud Scan
+      - name: SonarCloud Scan
         uses: SonarSource/sonarqube-scan-action@v5
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
@@ -45,18 +39,14 @@ jobs:
             -Dsonar.projectKey=ghofranekhadhar_weather-devops
             -Dsonar.organization=ghofranekhadhar
 
-
-
       - name: Login to DockerHub
-        uses: docker/login-action@v2
+        uses: docker/login-action@v3
         with:
           username: ${{ secrets.DOCKERHUB_USERNAME }}
           password: ${{ secrets.DOCKERHUB_TOKEN }}
 
       - name: Build Docker image
-        run: |
-          cd backend
-          docker build -t ${{ secrets.DOCKERHUB_USERNAME }}/weather-devops:latest .
+        run: cd backend && docker build -t ${{ secrets.DOCKERHUB_USERNAME }}/weather-devops:latest .
 
       - name: Scan image with Trivy
         uses: aquasecurity/trivy-action@master
@@ -67,5 +57,4 @@ jobs:
           severity: CRITICAL,HIGH
 
       - name: Push Docker image
-        run: |
-          docker push ${{ secrets.DOCKERHUB_USERNAME }}/weather-devops:latest
+        run: docker push ${{ secrets.DOCKERHUB_USERNAME }}/weather-devops:latest
