@@ -1,0 +1,24 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: weather-devops
+  labels:
+    app: weather-devops
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: weather-devops
+  template:
+    metadata:
+      labels:
+        app: weather-devops
+    spec:
+      containers:
+      - name: weather-devops
+        image: ghofranekh/weather-devops:latest
+        ports:
+        - containerPort: 5000
+        env:
+        - name: PORT
+          value: "5000"
